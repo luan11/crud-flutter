@@ -14,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _signIn() {
     if (_username == 'luan11' && _password == '123456') {
-      Navigator.pushReplacement(
+      Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MyHomePage()));
     } else {
       showDialog(

@@ -1,4 +1,5 @@
 import 'package:crud_flutter/pages/login.dart';
+import 'package:crud_flutter/pages/user.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -38,6 +39,12 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
         actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const UserPage()));
+              },
+              icon: const Icon(Icons.person_add_rounded)),
           IconButton(
               onPressed: () {
                 Navigator.pushReplacement(context,
