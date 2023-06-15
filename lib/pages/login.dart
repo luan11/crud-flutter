@@ -1,6 +1,8 @@
 import 'package:crud_flutter/pages/home.dart';
 import 'package:flutter/material.dart';
 
+import '../services/auth_service.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -9,25 +11,32 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final authService = AuthService();
+
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
   void _signIn() {
-    if (_username.text == 'luan11' && _password.text == '123456') {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-    } else {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('Username and/or password are invalid'),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Try again'))
-                ],
-              ));
-    }
+    authService.login(_username.text, _password.text).then((loggedUser) => {
+          if (loggedUser != null)
+            {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MyHomePage()))
+            }
+          else
+            {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('Username and/or password are invalid'),
+                        actions: <Widget>[
+                          TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Try again'))
+                        ],
+                      ))
+            }
+        });
   }
 
   @override
