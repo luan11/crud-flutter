@@ -9,11 +9,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _username = '';
-  String _password = '';
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
 
   void _signIn() {
-    if (_username == 'luan11' && _password == '123456') {
+    if (_username.text == 'luan11' && _password.text == '123456') {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MyHomePage()));
     } else {
@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
                 actions: <Widget>[
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Try again'))
+                      child: const Text('Try again'))
                 ],
               ));
     }
@@ -42,17 +42,13 @@ class _LoginPageState extends State<LoginPage> {
                 autocorrect: false,
                 enableSuggestions: false,
                 decoration: const InputDecoration(labelText: 'Username'),
-                onChanged: (value) => setState(() {
-                      _username = value;
-                    })),
+                controller: _username),
             TextFormField(
                 autocorrect: false,
                 enableSuggestions: false,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
-                onChanged: (value) => setState(() {
-                      _password = value;
-                    })),
+                controller: _password),
             Padding(
               padding: const EdgeInsets.only(top: 16.0),
               child: SizedBox(
