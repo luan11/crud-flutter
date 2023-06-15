@@ -2,6 +2,8 @@ import 'package:crud_flutter/pages/login.dart';
 import 'package:crud_flutter/pages/user.dart';
 import 'package:flutter/material.dart';
 
+import '../services/user_service.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -21,6 +23,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final _userService = UserService();
+
+  void signOut() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const LoginPage()));
+  }
+
+  Future<List<dynamic>> fetchUsers() async {
+    try {
+      final users = await _userService.getList();
+
+      return users;
+    } catch (error) {
+      signOut();
+    }
+
+    return List.empty();
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -45,18 +66,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     MaterialPageRoute(builder: (context) => const UserPage()));
               },
               icon: const Icon(Icons.person_add_rounded)),
-          IconButton(
-              onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()));
-              },
-              icon: const Icon(Icons.logout_rounded))
+          IconButton(onPressed: signOut, icon: const Icon(Icons.logout_rounded))
         ],
       ),
-      body: const Center(
+      body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Text('Here goes the listing'),
+        child: FutureBuilder(
+          future: fetchUsers(),
+          builder: (context, snapshot) {
+            final users = snapshot.data ?? [];
+
+            return Text('We have ${users.length} users');
+          },
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

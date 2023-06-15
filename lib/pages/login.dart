@@ -11,13 +11,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final authService = AuthService();
+  final _authService = AuthService();
 
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
 
   void _signIn() {
-    authService.login(_username.text, _password.text).then((loggedUser) => {
+    _authService.login(_username.text, _password.text).then((loggedUser) => {
           if (loggedUser != null)
             {
               Navigator.push(context,
