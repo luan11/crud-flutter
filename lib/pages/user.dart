@@ -1,4 +1,7 @@
+import 'package:crud_flutter/pages/home.dart';
 import 'package:flutter/material.dart';
+
+import '../services/user_service.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -8,6 +11,8 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
+  final _userService = UserService();
+
   final TextEditingController _name = TextEditingController();
   final TextEditingController _username = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -45,10 +50,22 @@ class _UserPageState extends State<UserPage> {
       return;
     }
 
-    _name.text = '';
-    _username.text = '';
-    _password.text = '';
-    _confirmPassword.text = '';
+    _userService.save({
+      'name': _name.text,
+      'username': _username.text,
+      'password': _password.text,
+    }).then((created) {
+      if (created) {
+        _name.text = '';
+        _username.text = '';
+        _password.text = '';
+        _confirmPassword.text = '';
+
+        Navigator.pop(context);
+      } else {
+        alert('An error occurred');
+      }
+    });
   }
 
   @override

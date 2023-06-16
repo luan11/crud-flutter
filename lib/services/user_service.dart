@@ -9,18 +9,23 @@ class UserService {
 
   final _session = SessionRepository();
 
-  Future<List<dynamic>> getList() async {
-    final Uri uri = Uri.parse(_baseUrl);
-
+  Future<Map<String, String>> _getHeaders() async {
     final loggedUser = await _session.getLoggedUser();
     final String token = loggedUser['token'];
 
+    return {
+      HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
+      HttpHeaders.authorizationHeader: 'Bearer $token',
+    };
+  }
+
+  Future<List<dynamic>> getList() async {
+    final uri = Uri.parse(_baseUrl);
+    final headers = await _getHeaders();
+
     final response = await http.get(
       uri,
-      headers: {
-        HttpHeaders.contentTypeHeader: 'application/json; charset=utf-8',
-        HttpHeaders.authorizationHeader: 'Bearer $token',
-      },
+      headers: headers,
     );
 
     if (response.statusCode == HttpStatus.ok) {
@@ -35,8 +40,35 @@ class UserService {
       throw HttpException(response.body, uri: uri);
     }
 
-    print('[UserService.getList] Error: ${response.body}');
-
     return List.empty();
+  }
+
+  Future<bool> save(dynamic user) async {
+    final userId = user['id'];
+
+    final uri = Uri.parse(userId != null ? '$_baseUrl/$userId' : _baseUrl);
+    final updateOrCreate = userId != null ? http.put : http.post;
+    final headers = await _getHeaders();
+
+    final response = await updateOrCreate(
+      uri,
+      headers: headers,
+      body: jsonEncode(user),
+    );
+
+    return response.statusCode == HttpStatus.created ||
+        response.statusCode == HttpStatus.ok;
+  }
+
+  Future<bool> delete(int userId) async {
+    final uri = Uri.parse('$_baseUrl/$userId');
+    final headers = await _getHeaders();
+
+    final response = await http.delete(
+      uri,
+      headers: headers,
+    );
+
+    return response.statusCode == HttpStatus.ok;
   }
 }
