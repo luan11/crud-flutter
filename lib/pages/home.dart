@@ -1,5 +1,6 @@
 import 'package:crud_flutter/pages/login.dart';
 import 'package:crud_flutter/pages/user.dart';
+import 'package:crud_flutter/services/session_repository.dart';
 import 'package:flutter/material.dart';
 
 import '../services/user_service.dart';
@@ -24,8 +25,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _userService = UserService();
+  final _session = SessionRepository();
 
   void signOut() {
+    _session.removeLoggedUser();
+
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const LoginPage()));
   }
@@ -74,13 +78,23 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: FutureBuilder(
           future: fetchUsers(),
-          builder: (context, snapshot) {
-            final users = snapshot.data ?? [];
-
-            return Text('We have ${users.length} users');
-          },
+          builder: (context, snapshot) => _buildListView(snapshot.data ?? []),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+Widget _buildListView(List<dynamic> users) {
+  return ListView.builder(
+    itemCount: users.length,
+    itemBuilder: (context, index) {
+      final user = users[index];
+
+      return ListTile(
+        title: Text(user['name']),
+        subtitle: Text(user['username']),
+      );
+    },
+  );
 }
